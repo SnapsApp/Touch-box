@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Move-able / resize-able, box</title>
+        <link rel="stylesheet" type="text/css" href="./css/style.css" />
+        <script type="text/javascript" src="./js/jquery.js"></script>
+        <script type="text/javascript" src="./js/jquery.touch_box.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.box').TouchBox({
+                    resize: true,
+                    drag: true,
+                    callback_touches: function (touches) {
+                        $('.touches').html('Touches: '+touches);
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="touches">Touches: 0</div>
+        <img src="http://jandaflowersandgifts.files.wordpress.com/2012/07/flower172.jpeg?w=714" width="150" height="150" class="box box-1" data-resize="true" data-drag="true" />
+        <img src="http://jandaflowersandgifts.files.wordpress.com/2012/07/flower172.jpeg?w=714" width="150" height="150" class="box box-2" data-resize="true" data-drag="true" />
+        <img src="http://jandaflowersandgifts.files.wordpress.com/2012/07/flower172.jpeg?w=714" width="150" height="150" class="box box-3" data-resize="true" data-drag="true" />
+    </body>
+</html>
