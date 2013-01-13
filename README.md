@@ -27,7 +27,7 @@ Here is an example of just how easy it is to enable Touch box using JavaScript.
 
 <code>
 &lt;div class=&quot;box&quot;&gt;&lt;/div&gt;
-\n
+\\n
 &lt;script type=&quot;text/javascript&quot;&gt;
 $(document).ready(function () {
    $('.box').TouchBox({
