@@ -44,3 +44,10 @@ $(document).ready(function () {
 });
 </script>
 ```
+
+The plugin it self is made so that it keeps the current element in focus over other Touch Box elements.
+Let's say you make a gallery of this. Then each time you start dragging or resizing a image it will come
+on top of all over elements.
+
+One thing to keep in mind is that the element you will be using Touch Box on require a position:absolute.
+Next version will set this it self.
