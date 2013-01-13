@@ -25,8 +25,8 @@ Where when you use the code initialization those options are turned on.
 
 Here is an example of just how easy it is to enable Touch box using JavaScript.
 
-<code>
-&lt;div class=&quot;box&quot;&gt;&lt;/div&gt;<br />
+```javascript
+&lt;div class=&quot;box&quot;&gt;&lt;/div&gt;
 &lt;script type=&quot;text/javascript&quot;&gt;
 $(document).ready(function () {
    $('.box').TouchBox({
@@ -42,4 +42,4 @@ $(document).ready(function () {
    });
 });
 &lt;/script&gt;
-</code>
+```
