@@ -31,15 +31,15 @@ Here is an example of just how easy it is to enable Touch box using JavaScript.
 &lt;script type=&quot;text/javascript&quot;&gt;
 $(document).ready(function () {
    $('.box').TouchBox({
-       resize: true,
-       drag: true,
-       callback_touches: function (touches) {
-           //Touch added or removed from touches. Parameter is given with current touches
-           //this is DOM element, so using $(this) wil give you an jQuery element
-       },
-       callback_change: function () {
-           //User dragged or resized element - this is DOM element, so using $(this) wil give you an jQuery element.
-       }
+   resize: true,
+   drag: true,
+   callback_touches: function (touches) {
+   //Touch added or removed from touches. Parameter is given with current touches
+   //this is DOM element, so using $(this) wil give you an jQuery element
+   },
+   callback_change: function () {
+   //User dragged or resized element - this is DOM element, so using $(this) wil give you an jQuery element.
+   }
    });
 });
 &lt;/script&gt;
