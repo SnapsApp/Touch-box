@@ -2,8 +2,9 @@ Touch-box
 =========
 
 Touch box is a jQuery plugin that brings resize &amp; drag features to iPad for DOM elements.
-(CSS is not required - Only for the demo)
+
 -
+*(CSS is not required - Only for the demo)*
 
 Example: http://danniehansen.com/touch_box/ - (iPad)
 
