@@ -16,9 +16,9 @@ Then you add a class named "touch-box" to your element.
 When an element has the class "touch-box" on it you can use data attributes
 to tell touch box what to do. Here is an example of how to use Touch box and enable resize & drag.
 
-<code>
+```html
 &lt;div class=&quot;touch-box&quot; data-resize=&quot;true&quot; data-drag=&quot;true&quot;&gt;&lt;/div&gt;
-</code>
+```
 
 As default these options are turned off when using DOM element initialization.
 Where when you use the code initialization those options are turned on.
@@ -26,8 +26,8 @@ Where when you use the code initialization those options are turned on.
 Here is an example of just how easy it is to enable Touch box using JavaScript.
 
 ```javascript
-&lt;div class=&quot;box&quot;&gt;&lt;/div&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
+<div class="box"></div>
+<script type="text/javascript">
 $(document).ready(function () {
    $('.box').TouchBox({
        resize: true,
@@ -41,5 +41,5 @@ $(document).ready(function () {
        }
    });
 });
-&lt;/script&gt;
+</script>
 ```
