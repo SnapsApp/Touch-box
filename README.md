@@ -17,7 +17,7 @@ When an element has the class "touch-box" on it you can use data attributes
 to tell touch box what to do. Here is an example of how to use Touch box and enable resize & drag.
 
 ```html
-&lt;div class=&quot;touch-box&quot; data-resize=&quot;true&quot; data-drag=&quot;true&quot;&gt;&lt;/div&gt;
+<div class="touch-box" data-resize="true" data-drag="true"></div>
 ```
 
 As default these options are turned off when using DOM element initialization.
