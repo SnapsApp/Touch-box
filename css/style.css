@@ -51,7 +51,7 @@ table {
  * Design elements
  **/
 
-.box {
+.touch-box {
 	background-color: #3482C2;
 	border:1px solid #2C6491;
 	border-radius: 3px;
@@ -73,13 +73,7 @@ table {
 	top:200px;
 }
 
-.touches {
-	width:100px;
-	height:25px;
-	line-height: 25px;
-	text-align: center;
-	font-family: Verdana, Arial;
-	position: absolute;
-	right:0;
-	top:0;
+.box-4 {
+	left:400px;
+	top:400px;
 }

@@ -1,5 +1,5 @@
 /**
-    Touch box - Enabled resize & drag of DOM elements on the web for iPad.
+    Touch box - Enabled resize, drag & rotate of DOM elements on the web for iPad and other touch devices.
     Copyright (C) 2013 Dannie Hansen
  
     This program is free software: you can redistribute it and/or modify
@@ -18,14 +18,37 @@
 ;(function ($) {
     "use strict";
     
-    var undef, zindex = 400;
+    var undef, zindex = 400, propNameTransform = 'Transform', propNameTransformOrigin = 'TransformOrigin', transformProps = [
+		'O',
+		'ms',
+		'Webkit',
+		'Moz'
+	], i = transformProps.length, div = document.createElement('div'), divStyle = div.style;
+    
+    while(i--) {
+        if((transformProps[i]+propNameTransform) in divStyle) {
+            propNameTransform = transformProps[i]+propNameTransform;
+            propNameTransformOrigin = transformProps[i]+propNameTransformOrigin;
+        }
+    }
+    
+    function getRotationAngle(touch1X, touch1Y, touch2X, touch2Y) {
+        var x = touch1X - touch2X,
+            y = touch1Y - touch2Y,
+            radiant = Math.atan2(y, x);
+		
+        return (radiant * 180 / Math.PI);	
+    }
     
     $.fn.TouchBox = function (options) {
         var defaults = {
-            drag: true,
-            resize: true,
+            drag: false,
+            resize: false,
+            rotate: false,
             callback_touches: null,
-            callback_change: null
+            callback_size_change: null,
+            callback_position_change: null,
+            callback_degree_change: null
         }
         
         if(options != undef) $.extend(defaults, options);
@@ -40,7 +63,17 @@
                 startDistance = 0,
                 ignoreTouch = false,
                 startX = 0,
-                startY = 0;
+                startY = 0,
+                rotatePoint1X = 0,
+                rotatePoint1Y = 0,
+                rotatePoint2X = 0,
+                rotatePoint2Y = 0,
+                rotation = false,
+                startDegree = 0,
+                currDegree = 0,
+                _startDegree = 0;
+            
+            if(defaults.rotate) this.style[propNameTransformOrigin] = 'center center';
             
             $this.bind('touchstart', function (e) {
                 zindex += 1;
@@ -52,15 +85,31 @@
                 if(ignoreTouch) ignoreTouch = false;
                 
                 if(!ignoreTouch) {
-                    var offset = $this.offset(),
+                    var offsetLeft = parseFloat($this.css('left'),10),
+                        offsetTop = parseFloat($this.css('top'),10),
                         x = e.originalEvent.touches[0].pageX,
                         y = e.originalEvent.touches[0].pageY;
                     
-                    startX = offset.left;
-                    startY = offset.top;
+                    startX = offsetLeft;
+                    startY = offsetTop;
                     
-                    diffX = x - offset.left;
-                    diffY = y - offset.top;
+                    diffX = x - offsetLeft;
+                    diffY = y - offsetTop;
+                }
+                
+                if(defaults.rotate) {
+                    if(touches == 1) {
+                        rotatePoint1X = e.originalEvent.touches[0].pageX;
+                        rotatePoint1Y = e.originalEvent.touches[0].pageY;
+                    } else if(touches == 2) {
+                        rotatePoint2X = e.originalEvent.touches[1].pageX;
+                        rotatePoint2Y = e.originalEvent.touches[1].pageY;
+                        
+                        startDegree = getRotationAngle(rotatePoint1X, rotatePoint1Y, rotatePoint2X, rotatePoint2Y);
+                        _startDegree = currDegree;
+                        
+                        rotation = true;
+                    }
                 }
                 
                 if(defaults.resize && touches == 2) {
@@ -79,8 +128,6 @@
             }).bind('touchmove', function (e) {
                 if(defaults.callback_touches != null) defaults.callback_touches.apply(this, [touches]);
                 
-                var change = false;
-                
                 if(defaults.resize && touches == 2) {
                     var x = e.originalEvent.touches[0].pageX,
                         y = e.originalEvent.touches[0].pageY,
@@ -89,38 +136,53 @@
                         xd = x2 - x,
                         yd = y2 - y,
                         distance = Math.sqrt(xd*xd + yd*yd),
-                        offset = $this.offset(),
-                        halfDistance = ((distance - startDistance)/2);
+                        halfDistance = ((distance - startDistance)/2),
+                        newWidth = (startWidth + (distance - startDistance)),
+                        newHeight = (startHeight + (distance - startDistance)),
+                        newLeft = (startX-halfDistance),
+                        newTop = (startY-halfDistance);
                     
                     $this.css({
-                        width: (startWidth + (distance - startDistance))+'px',
-                        height: (startHeight + (distance - startDistance))+'px',
-                        left: (startX-halfDistance)+'px',
-                        top: (startY-halfDistance)+'px'
+                        width: newWidth+'px',
+                        height: newHeight+'px',
+                        left: newLeft+'px',
+                        top: newTop+'px'
                     });
                     
-                    change = true;
+                    if(defaults.callback_size_change != null) defaults.callback_size_change.apply(this, [newWidth, newHeight]);
+                    if(defaults.callback_position_change != null) defaults.callback_position_change.apply(this, [newLeft, newTop]);
                 }
                 
                 if(defaults.drag && !ignoreTouch && touches == 1) {
                     var x = e.originalEvent.touches[0].pageX,
-                        y = e.originalEvent.touches[0].pageY;
+                        y = e.originalEvent.touches[0].pageY,
+                        newLeft = (x-diffX),
+                        newTop = (y-diffY);
                     
                     $this.css({
-                        left: (x-diffX)+'px',
-                        top: (y-diffY)+'px'
+                        left: newLeft+'px',
+                        top: newTop+'px'
                     });
                     
-                    change = true;
+                    if(defaults.callback_position_change != null) defaults.callback_position_change.apply(this, [newLeft, newTop]);
                 }
                 
-                if(change && defaults.callback_change != null) defaults.callback_change.apply(this, []);
+                if(defaults.rotate && rotation) {
+                    var lastDegrees = currDegree,
+                    degrees = (startDegree - getRotationAngle(e.originalEvent.touches[0].pageX, e.originalEvent.touches[0].pageY, e.originalEvent.touches[1].pageX, e.originalEvent.touches[1].pageY) - _startDegree) * -1;
+                    currDegree = degrees;
+                    this.style[propNameTransform] = 'rotate('+Math.floor(degrees)+'deg)';
+                    
+                    if(defaults.callback_degree_change != null) defaults.callback_degree_change.apply(this, [lastDegrees, degrees]);
+                }
                 
                 e.preventDefault();
             }).bind('touchend', function (e) {
                 touches -= 1;
                 
                 if(touches == 1) ignoreTouch = true;
+                
+                rotation = false;
                 
                 if(defaults.callback_touches != null) defaults.callback_touches.apply(this, [touches]);
             });
@@ -135,13 +197,16 @@
                 var $this = $(this),
                     options = {
                         'drag': false,
-                        'resize': false
+                        'resize': false,
+                        'rotate': false
                     },
                     resize = $this.attr('data-resize'),
-                    drag = $this.attr('data-drag');
+                    drag = $this.attr('data-drag'),
+                    rotate = $this.attr('data-rotate');
                 
                 if(resize != undef && resize == 'true') options['resize'] = true;
                 if(drag != undef && drag == 'true') options['drag'] = true;
+                if(rotate != undef && rotate == 'true') options['rotate'] = true;
                 
                 $this.TouchBox(options);
             });
