@@ -8,7 +8,7 @@ Touch box is a jQuery plugin that brings resize, drag & rotate features to iPad 
 
 Example: http://danniehansen.com/touch_box/ - (Only tested on iPad)
 
-Touch box enabled the user to resize or drag elements of your choice on the site.
+Touch box enabled the user to resize, drag or rotate elements of your choice on the site.
 This could be images, windows or design elements.
 
 To use Touch box you simple load in the JavaScript after jQuery.
@@ -43,7 +43,7 @@ $(document).ready(function () {
        callback_position_change: function (newLeft, newTop) {
            //User changed the position of the DOM element - this is DOM element, so using $(this) wil give you an jQuery element.
        },
-       callback_degree_change: function () {
+       callback_degree_change: function (lastDegree, newDegree) {
            //User changed the degrees of the DOM element - this is DOM element, so using $(this) wil give you an jQuery element.
        }
    });
