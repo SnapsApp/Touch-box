@@ -1,12 +1,12 @@
 Touch-box
 =========
 
-Touch box is a jQuery plugin that brings resize &amp; drag features to iPad for DOM elements.
+Touch box is a jQuery plugin that brings resize, drag & rotate features to iPad and other touch devices for DOM elements.
 
 -
 *(CSS is not required - Only for the demo)*
 
-Example: http://danniehansen.com/touch_box/ - (iPad)
+Example: http://danniehansen.com/touch_box/ - (Only tested on iPad)
 
 Touch box enabled the user to resize or drag elements of your choice on the site.
 This could be images, windows or design elements.
@@ -18,7 +18,7 @@ When an element has the class "touch-box" on it you can use data attributes
 to tell touch box what to do. Here is an example of how to use Touch box and enable resize & drag.
 
 ```html
-<div class="touch-box" data-resize="true" data-drag="true"></div>
+<div class="touch-box" data-resize="true" data-drag="true" data-rotate="true"></div>
 ```
 
 As default these options are turned off when using DOM element initialization.
@@ -37,8 +37,14 @@ $(document).ready(function () {
            //Touch added or removed from touches. Parameter is given with current touches
            //this is DOM element, so using $(this) wil give you an jQuery element
        },
-       callback_change: function () {
-           //User dragged or resized element - this is DOM element, so using $(this) wil give you an jQuery element.
+       callback_size_change: function (newWidth, newHeight) {
+           //User changed the size of the DOM element - this is DOM element, so using $(this) wil give you an jQuery element.
+       },
+       callback_position_change: function (newLeft, newTop) {
+           //User changed the position of the DOM element - this is DOM element, so using $(this) wil give you an jQuery element.
+       },
+       callback_degree_change: function () {
+           //User changed the degrees of the DOM element - this is DOM element, so using $(this) wil give you an jQuery element.
        }
    });
 });
@@ -46,8 +52,8 @@ $(document).ready(function () {
 ```
 
 The plugin it self is made so that it keeps the current element in focus over other Touch Box elements.
-Let's say you make a gallery of this. Then each time you start dragging or resizing a image it will come
-on top of all over elements.
+Let's say you make a gallery of this. Then each time you start dragging, resizing or rotating an image it will come
+on top of all other TouchBox elements.
 
-One thing to keep in mind is that the element you will be using Touch Box on require a position:absolute.
+One thing to keep in mind is that the element you will be using Touch Box on require a position:absolute and a set left/top.
 Next version will set this it self.
