@@ -33,6 +33,8 @@ $(document).ready(function () {
    $('.box').TouchBox({
        resize: true,
        drag: true,
+       rotate: true,
+       grid_drag: 1,
        callback_touches: function (touches) {
            //Touch added or removed from touches. Parameter is given with current touches
            //this is DOM element, so using $(this) wil give you an jQuery element

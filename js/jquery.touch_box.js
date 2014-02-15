@@ -45,6 +45,7 @@
             drag: false,
             resize: false,
             rotate: false,
+			grid_drag: 1,
             callback_touches: null,
             callback_size_change: null,
             callback_position_change: null,
@@ -184,8 +185,8 @@
 						newTop = (y - $.data($thiz[0], 'diffY'));
 					
 					$this.css({
-						left: newLeft + 'px',
-						top: newTop + 'px'
+						left: (Math.floor((newLeft / options.grid_drag)) * options.grid_drag) + 'px',
+						top: (Math.floor((newTop / options.grid_drag)) * options.grid_drag) + 'px'
 					});
 					
 					if(options.callback_position_change != null) options.callback_position_change.apply(this, [newLeft, newTop]);
