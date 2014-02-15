@@ -54,142 +54,168 @@
         if(options != undef) $.extend(defaults, options);
         
         this.each(function () {
-            var $this = $(this),
-                touches = 0,
-                diffX = 0,
-                diffY = 0,
-                startWidth = 0,
-                startHeight = 0,
-                startDistance = 0,
-                ignoreTouch = false,
-                startX = 0,
-                startY = 0,
-                rotatePoint1X = 0,
-                rotatePoint1Y = 0,
-                rotatePoint2X = 0,
-                rotatePoint2Y = 0,
-                rotation = false,
-                startDegree = 0,
-                currDegree = 0,
-                _startDegree = 0;
-            
-            if(defaults.rotate) this.style[propNameTransformOrigin] = 'center center';
-            
-			$this[0]['draggable'] = false;
+            var $this = $(this);
 			
-            $this.bind('touchstart mousedown', function (e) {
+			$.data($this[0], 'options', defaults);
+			
+			$.data($this[0], 'touches', 0);
+			$.data($this[0], 'diffX', 0);
+			$.data($this[0], 'diffY', 0);
+			$.data($this[0], 'startWidth', 0);
+			$.data($this[0], 'startHeight', 0);
+			$.data($this[0], 'startDistance', 0);
+			$.data($this[0], 'ignoreTouch', false);
+			$.data($this[0], 'startX', 0);
+			$.data($this[0], 'startY', 0);
+			$.data($this[0], 'rotatePoint1X', 0);
+			$.data($this[0], 'rotatePoint1Y', 0);
+			$.data($this[0], 'rotatePoint2X', 0);
+			$.data($this[0], 'rotatePoint2Y', 0);
+			$.data($this[0], 'rotation', false);
+			$.data($this[0], 'startDegree', 0);
+			$.data($this[0], 'currDegree', 0);
+			$.data($this[0], '_startDegree', 0);
+			
+            if(defaults.rotate) $this.css(propNameTransformOrigin, 'center center');
+            
+			this.draggable = false;
+			
+            $this.unbind('touchstart.touchBox mousedown.touchBox').bind('touchstart.touchBox mousedown.touchBox', function (e) {
+				var $thiz = $(this),
+					pageX = (typeof e.pageX != 'undefined' ? e.pageX : e.originalEvent.touches[0].pageX),
+					pageY = (typeof e.pageY != 'undefined' ? e.pageY : e.originalEvent.touches[0].pageY),
+					ignoreTouch = $.data($thiz[0], 'ignoreTouch'),
+					touches = (typeof e.pageX != 'undefined' ? 1 : e.originalEvent.touches.length),
+					options = $.data($thiz[0], 'options');
+				
 				zindex += 1;
 				
-				$this.css({ zIndex: zindex });
+				$thiz.css({ zIndex: zindex });
+				$.data($thiz[0], 'touches', touches);
 				
-				touches = (typeof e.pageX != 'undefined' ? 1 : e.originalEvent.touches.length);
-				
-				if(ignoreTouch) ignoreTouch = false;
-				
-				var pageX = (typeof e.pageX != 'undefined' ? e.pageX : e.originalEvent.touches[0].pageX),
-					pageY = (typeof e.pageY != 'undefined' ? e.pageY : e.originalEvent.touches[0].pageY);
+				if(ignoreTouch) {
+					ignoreTouch = false;
+					$.data($thiz[0], 'ignoreTouch', ignoreTouch);
+				}
 				
 				if(!ignoreTouch) {
-					var offsetLeft = parseFloat($this.css('left'),10),
-						offsetTop = parseFloat($this.css('top'),10),
+					var offsetLeft = parseFloat($thiz.css('left'), 10),
+						offsetTop = parseFloat($thiz.css('top'), 10),
 						x = pageX,
 						y = pageY;
 					
-					startX = offsetLeft;
-					startY = offsetTop;
+					$.data($thiz[0], 'startX', offsetLeft);
+					$.data($thiz[0], 'startY', offsetTop);
 					
-					diffX = x - offsetLeft;
-					diffY = y - offsetTop;
+					$.data($thiz[0], 'diffX',  (x - offsetLeft));
+					$.data($thiz[0], 'diffY', (y - offsetTop));
 				}
 				
-				if(defaults.rotate) {
+				if(options.rotate) {
 					if(touches == 1) {
-						rotatePoint1X = pageX;
-						rotatePoint1Y = pageY;
+						$.data($thiz[0], 'rotatePoint1X', pageX);
+						$.data($thiz[0], 'rotatePoint1Y', pageY);
 					} else if(touches == 2) {
-						rotatePoint2X = e.originalEvent.touches[1].pageX;
-						rotatePoint2Y = e.originalEvent.touches[1].pageY;
+						var rotatePoint2X = e.originalEvent.touches[1].pageX,
+							rotatePoint2Y = e.originalEvent.touches[1].pageY,
+							rotatePoint1X = $.data($thiz[0], 'rotatePoint1X'),
+							rotatePoint1Y = $.data($thiz[0], 'rotatePoint1Y');
 						
-						startDegree = getRotationAngle(rotatePoint1X, rotatePoint1Y, rotatePoint2X, rotatePoint2Y);
-						_startDegree = currDegree;
+						$.data($thiz[0], 'rotatePoint2X', rotatePoint2X);
+						$.data($thiz[0], 'rotatePoint2Y', rotatePoint2Y);
 						
-						rotation = true;
+						$.data($thiz[0], 'startDegree', getRotationAngle(rotatePoint1X, rotatePoint1Y, rotatePoint2X, rotatePoint2Y));
+						$.data($thiz[0], '_startDegree', $.data($thiz[0], 'currDegree'));
+						
+						$.data($thiz[0], 'rotation', true);
 					}
 				}
 				
-				if(defaults.resize && touches == 2) {
-					startWidth = $this.width();
-					startHeight = $this.height();
-					var x = e.originalEvent.touches[0].pageX,
-						y = e.originalEvent.touches[0].pageY,
-						x2 = e.originalEvent.touches[1].pageX,
-						y2 = e.originalEvent.touches[1].pageY,
-						xd = x2 - x,
-						yd = y2 - y,
-						distance = Math.sqrt(xd*xd + yd*yd);
+				if(options.resize && touches == 2) {
+					$.data($thiz[0], 'startWidth', $this.width());
+					$.data($thiz[0], 'startHeight', $this.height());
 					
-					startDistance = distance;
-				}
-            }).bind('touchmove mousemove', function (e) {
-				if(defaults.callback_touches != null) defaults.callback_touches.apply(this, [touches]);
-				
-				if(defaults.resize && touches == 2) {
 					var x = e.originalEvent.touches[0].pageX,
 						y = e.originalEvent.touches[0].pageY,
 						x2 = e.originalEvent.touches[1].pageX,
 						y2 = e.originalEvent.touches[1].pageY,
-						xd = x2 - x,
-						yd = y2 - y,
-						distance = Math.sqrt(xd*xd + yd*yd),
-						halfDistance = ((distance - startDistance)/2),
-						newWidth = (startWidth + (distance - startDistance)),
-						newHeight = (startHeight + (distance - startDistance)),
-						newLeft = (startX-halfDistance),
-						newTop = (startY-halfDistance);
+						xd = (x2 - x),
+						yd = (y2 - y),
+						distance = Math.sqrt((xd * xd) + (yd * yd));
+					
+					$.data($thiz[0], 'startDistance', distance);
+				}
+            }).unbind('touchmove.touchBox mousemove.touchBox').bind('touchmove.touchBox mousemove.touchBox', function (e) {
+				var $thiz = $(this),
+					touches = $.data($thiz[0], 'touches'),
+					options = $.data($thiz[0], 'options');
+				
+				if(options.callback_touches != null) options.callback_touches.apply(this, [touches]);
+				
+				if(options.resize && touches == 2) {
+					var x = e.originalEvent.touches[0].pageX,
+						y = e.originalEvent.touches[0].pageY,
+						x2 = e.originalEvent.touches[1].pageX,
+						y2 = e.originalEvent.touches[1].pageY,
+						xd = (x2 - x),
+						yd = (y2 - y),
+						distance = Math.sqrt((xd * xd) + (yd * yd)),
+						halfDistance = ((distance - $.data($thiz[0], 'startDistance')) / 2),
+						newWidth = ($.data($thiz[0], 'startWidth') + (distance - $.data($thiz[0], 'startDistance'))),
+						newHeight = ($.data($thiz[0], 'startHeight') + (distance - $.data($thiz[0], 'startDistance'))),
+						newLeft = ($.data($thiz[0], 'startX') - halfDistance),
+						newTop = ($.data($thiz[0], 'startY') - halfDistance);
 					
 					$this.css({
-						width: newWidth+'px',
-						height: newHeight+'px',
-						left: newLeft+'px',
-						top: newTop+'px'
+						width: newWidth + 'px',
+						height: newHeight + 'px',
+						left: newLeft + 'px',
+						top: newTop + 'px'
 					});
 					
-					if(defaults.callback_size_change != null) defaults.callback_size_change.apply(this, [newWidth, newHeight]);
-					if(defaults.callback_position_change != null) defaults.callback_position_change.apply(this, [newLeft, newTop]);
+					if(options.callback_size_change != null) options.callback_size_change.apply(this, [newWidth, newHeight]);
+					if(options.callback_position_change != null) options.callback_position_change.apply(this, [newLeft, newTop]);
 				}
 				
-				if(defaults.drag && !ignoreTouch && touches == 1) {
+				if(options.drag && !$.data($thiz[0], 'ignoreTouch') && touches == 1) {
 					var x = (typeof e.pageX != 'undefined' ? e.pageX : e.originalEvent.touches[0].pageX),
 						y = (typeof e.pageY != 'undefined' ? e.pageY : e.originalEvent.touches[0].pageY),
-						newLeft = (x - diffX),
-						newTop = (y - diffY);
+						newLeft = (x - $.data($thiz[0], 'diffX')),
+						newTop = (y - $.data($thiz[0], 'diffY'));
 					
 					$this.css({
-						left: newLeft+'px',
-						top: newTop+'px'
+						left: newLeft + 'px',
+						top: newTop + 'px'
 					});
 					
-					if(defaults.callback_position_change != null) defaults.callback_position_change.apply(this, [newLeft, newTop]);
+					if(options.callback_position_change != null) options.callback_position_change.apply(this, [newLeft, newTop]);
 				}
 				
-				if(defaults.rotate && rotation) {
-					var lastDegrees = currDegree,
-					degrees = (startDegree - getRotationAngle(e.originalEvent.touches[0].pageX, e.originalEvent.touches[0].pageY, e.originalEvent.touches[1].pageX, e.originalEvent.touches[1].pageY) - _startDegree) * -1;
-					currDegree = degrees;
-					this.style[propNameTransform] = 'rotate('+Math.floor(degrees)+'deg)';
+				if(options.rotate && $.data($thiz[0], 'rotation')) {
+					var lastDegrees = $.data($thiz[0], 'currDegree'),
+					degrees = (($.data($thiz[0], 'startDegree') - getRotationAngle(e.originalEvent.touches[0].pageX, e.originalEvent.touches[0].pageY, e.originalEvent.touches[1].pageX, e.originalEvent.touches[1].pageY) - $.data($thiz[0], '_startDegree')) * -1);
 					
-					if(defaults.callback_degree_change != null) defaults.callback_degree_change.apply(this, [lastDegrees, degrees]);
+					$.data($thiz[0], 'currDegree', degrees);
+					$thiz.css(propNameTransform, 'rotate(' + Math.floor(degrees) + 'deg)');
+					
+					if(options.callback_degree_change != null) options.callback_degree_change.apply(this, [lastDegrees, degrees]);
 				}
 				
 				e.preventDefault();
-            }).bind('touchend mouseup', function (e) {
+            }).unbind('touchend.touchBox mouseup.touchBox').bind('touchend.touchBox mouseup.touchBox', function (e) {
+				var $thiz = $(this),
+					options = $.data($thiz[0], 'options'),
+					touches = $.data($thiz[0], 'touches');
+				
 				touches -= 1;
 				
-				if(touches == 1) ignoreTouch = true;
+				$.data($thiz[0], 'touches', touches);
 				
-				rotation = false;
+				if(touches == 1) $.data($thiz[0], 'ignoreTouch', true);
 				
-				if(defaults.callback_touches != null) defaults.callback_touches.apply(this, [touches]);
+				$.data($thiz[0], 'rotation', false);
+				
+				if(options.callback_touches != null) options.callback_touches.apply(this, [touches]);
             });
         });
     };
