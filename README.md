@@ -6,7 +6,7 @@ Touch box is a jQuery plugin that brings resize, drag & rotate features to touch
 -
 *(CSS is not required - Only for the demo)*
 
-Example: http://danniehansen.com/touch_box/
+Example: http://37.139.9.46/touch-box/
 
 Touch box enabled the user to resize, drag or rotate elements of your choice on the site.
 This could be images, windows or design elements.
