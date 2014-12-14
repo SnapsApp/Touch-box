@@ -26,7 +26,7 @@
   ], i = transformProps.length, div = document.createElement('div'), divStyle = div.style;
 
   while(i--) {
-    if((transformProps[i]+propNameTransform) in divStyle) {
+    if ((transformProps[i]+propNameTransform) in divStyle) {
       propNameTransform = transformProps[i]+propNameTransform;
       propNameTransformOrigin = transformProps[i]+propNameTransformOrigin;
     }
@@ -45,7 +45,6 @@
       drag: false,
       resize: false,
       rotate: false,
-      parent: true,
       grid_drag: 1,
       callback_touches: null,
       callback_size_change: null,
@@ -53,7 +52,7 @@
       callback_degree_change: null
     }
 
-    if(options !== undef) $.extend(defaults, options);
+    if (options !== undef) $.extend(defaults, options);
 
     this.each(function () {
       var $this = $(this);
@@ -78,7 +77,7 @@
       $.data($this[0], 'currDegree', 0);
       $.data($this[0], '_startDegree', 0);
 
-      if(defaults.rotate) $this.css(propNameTransformOrigin, 'center center');
+      if (defaults.rotate) $this.css(propNameTransformOrigin, 'center center');
 
       this.draggable = false;
 
@@ -95,12 +94,12 @@
         $thiz.css({ zIndex: zindex });
         $.data($thiz[0], 'touches', touches);
 
-        if(ignoreTouch) {
+        if (ignoreTouch) {
           ignoreTouch = false;
           $.data($thiz[0], 'ignoreTouch', ignoreTouch);
         }
 
-        if(!ignoreTouch) {
+        if (!ignoreTouch) {
           var offsetLeft = parseFloat($thiz.css('left'), 10),
           offsetTop = parseFloat($thiz.css('top'), 10),
           x = pageX,
@@ -113,11 +112,11 @@
           $.data($thiz[0], 'diffY', (y - offsetTop));
         }
 
-        if(options.rotate) {
-          if(touches === 1) {
+        if (options.rotate) {
+          if (touches === 1) {
             $.data($thiz[0], 'rotatePoint1X', pageX);
             $.data($thiz[0], 'rotatePoint1Y', pageY);
-          } else if(touches === 2) {
+          } else if (touches === 2) {
             var rotatePoint2X = e.originalEvent.touches[1].pageX,
             rotatePoint2Y = e.originalEvent.touches[1].pageY,
             rotatePoint1X = $.data($thiz[0], 'rotatePoint1X'),
@@ -133,7 +132,7 @@
           }
         }
 
-        if(options.resize && touches === 2) {
+        if (options.resize && touches === 2) {
           $.data($thiz[0], 'startWidth', $this.width());
           $.data($thiz[0], 'startHeight', $this.height());
 
@@ -152,11 +151,13 @@
         touches = $.data($thiz[0], 'touches'),
         options = $.data($thiz[0], 'options');
 
-        if(options.callback_touches) options.callback_touches.apply(this, [touches]);
+        if (options.callback_touches) options.callback_touches.apply(this, [touches]);
 
-        if(options.resize && touches === 2) {
-          var startWidth  = $.data($thiz[0], 'startWidth')
-          var startHeight = $.data($thiz[0], 'startHeight')
+        if (options.resize && touches === 2) {
+          var startWidth  = $.data($thiz[0], 'startWidth');
+          var startHeight = $.data($thiz[0], 'startHeight');
+          console.log(startWidth, startHeight, startWidth / startHeight);
+
           var x = e.originalEvent.touches[0].pageX,
           y = e.originalEvent.touches[0].pageY,
           x2 = e.originalEvent.touches[1].pageX,
@@ -166,21 +167,9 @@
           distance = Math.sqrt((xd * xd) + (yd * yd)),
           halfDistance = ((distance - $.data($thiz[0], 'startDistance')) / 2),
           newWidth = (startWidth + (distance - $.data($thiz[0], 'startDistance'))),
-          newHeight = (startHeight + (distance - $.data($thiz[0], 'startDistance'))) * (startHeight / startWidth),
+          newHeight = (startHeight + (distance - $.data($thiz[0], 'startDistance')) * (startHeight / startWidth)),
           newLeft = ($.data($thiz[0], 'startX') - halfDistance),
           newTop = ($.data($thiz[0], 'startY') - halfDistance);
-
-          if(options.parent){
-            var ret=false;
-            if(newWidth > $this.parent().width()){
-              newWidth = $this.parent().width();
-              newLeft=0;
-            }
-            if(newHeight > $this.parent().height()){
-              newHeight = $this.parent().height();
-              newTop = 0;
-            }
-          }
 
           $this.css({
             width: newWidth + 'px',
@@ -189,47 +178,36 @@
             top: newTop + 'px'
           });
 
-          if(options.callback_size_change) options.callback_size_change.apply(this, [newWidth, newHeight]);
-          if(options.callback_position_change) options.callback_position_change.apply(this, [newLeft, newTop]);
+          if (options.callback_size_change) options.callback_size_change.apply(this, [newWidth, newHeight]);
+          if (options.callback_position_change) options.callback_position_change.apply(this, [newLeft, newTop]);
         }
 
-        if(options.drag && !$.data($thiz[0], 'ignoreTouch') && touches === 1) {
-          var x = (typeof e.pageX !== 'undefined' ? e.pageX : e.originalEvent.touches[0].pageX);
-          var y = (typeof e.pageY !== 'undefined' ? e.pageY : e.originalEvent.touches[0].pageY);
-          var newLeft = (Math.floor(((x - $.data($thiz[0], 'diffX')) / options.grid_drag)) * options.grid_drag);
-          var newTop = (Math.floor(((y - $.data($thiz[0], 'diffY')) / options.grid_drag)) * options.grid_drag);
-
-          if(options.parent){
-            if(newLeft < 0)newLeft = 0;
-            if(newTop < 0)newTop = 0;
-            if( (newLeft+$thiz.width()) >= $thiz.parent().width() ){
-              newLeft = $thiz.parent().width()-$thiz.width();
-            }
-            if( (newTop+$thiz.height()) >= $thiz.parent().height() ){
-              newTop = $thiz.parent().height()-$thiz.height();
-            }
-          }
+        if (options.drag && !$.data($thiz[0], 'ignoreTouch') && touches === 1) {
+          var x = (typeof e.pageX !== 'undefined' ? e.pageX : e.originalEvent.touches[0].pageX),
+          y = (typeof e.pageY !== 'undefined' ? e.pageY : e.originalEvent.touches[0].pageY),
+          newLeft = (x - $.data($thiz[0], 'diffX')),
+          newTop = (y - $.data($thiz[0], 'diffY'));
 
           $this.css({
             left: (Math.floor((newLeft / options.grid_drag)) * options.grid_drag) + 'px',
             top: (Math.floor((newTop / options.grid_drag)) * options.grid_drag) + 'px'
           });
 
-          if(options.callback_position_change) options.callback_position_change.apply(this, [newLeft, newTop]);
+          if (options.callback_position_change) options.callback_position_change.apply(this, [newLeft, newTop]);
         }
 
-        if(options.rotate && $.data($thiz[0], 'rotation')) {
+        if (options.rotate && $.data($thiz[0], 'rotation')) {
           var lastDegrees = $.data($thiz[0], 'currDegree'),
           degrees = (($.data($thiz[0], 'startDegree') - getRotationAngle(e.originalEvent.touches[0].pageX, e.originalEvent.touches[0].pageY, e.originalEvent.touches[1].pageX, e.originalEvent.touches[1].pageY) - $.data($thiz[0], '_startDegree')) * -1);
 
           $.data($thiz[0], 'currDegree', degrees);
           $thiz.css(propNameTransform, 'rotate(' + Math.floor(degrees) + 'deg)');
 
-          if(options.callback_degree_change) options.callback_degree_change.apply(this, [lastDegrees, degrees]);
+          if (options.callback_degree_change) options.callback_degree_change.apply(this, [lastDegrees, degrees]);
         }
 
         e.preventDefault();
-      }).unbind('touchend.touchBox mouseup.touchBox').bind('touchend.touchBox mouseup.touchBox', function () {
+      }).unbind('touchend.touchBox mouseup.touchBox').bind('touchend.touchBox mouseup.touchBox', function (e) {
         var $thiz = $(this),
         options = $.data($thiz[0], 'options'),
         touches = $.data($thiz[0], 'touches');
@@ -238,12 +216,36 @@
 
         $.data($thiz[0], 'touches', touches);
 
-        if(touches === 1) $.data($thiz[0], 'ignoreTouch', true);
+        if (touches === 1) $.data($thiz[0], 'ignoreTouch', true);
 
         $.data($thiz[0], 'rotation', false);
 
-        if(options.callback_touches) options.callback_touches.apply(this, [touches]);
+        if (options.callback_touches) options.callback_touches.apply(this, [touches]);
       });
     });
   };
+
+  $(document).ready(function () {
+    var $boxes = $('.touch-box');
+
+    if ($boxes.length > 0) {
+      $boxes.each(function () {
+        var $this = $(this),
+        options = {
+          'drag': false,
+          'resize': false,
+          'rotate': false
+        },
+        resize = $this.attr('data-resize'),
+        drag = $this.attr('data-drag'),
+        rotate = $this.attr('data-rotate');
+
+        if (resize !== undef && resize === 'true') options['resize'] = true;
+        if (drag !== undef && drag === 'true') options['drag'] = true;
+        if (rotate !== undef && rotate === 'true') options['rotate'] = true;
+
+        $this.TouchBox(options);
+      });
+    }
+  });
 })(jQuery);
