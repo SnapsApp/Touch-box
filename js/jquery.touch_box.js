@@ -56,6 +56,7 @@
 
     this.each(function () {
       var $this = $(this);
+      var $parent = $this.parent();
 
       $.data($this[0], 'options', defaults);
 
@@ -97,10 +98,10 @@
         }
 
         if (!ignoreTouch) {
-          var offsetLeft = parseFloat($thiz.css('left'), 10),
-          offsetTop = parseFloat($thiz.css('top'), 10),
-          x = pageX,
-          y = pageY;
+          var offsetLeft = parseFloat($thiz.css('left'), 10);
+          var offsetTop = parseFloat($thiz.css('top'), 10);
+          var x = pageX;
+          var y = pageY;
 
           $.data($thiz[0], 'startX', offsetLeft);
           $.data($thiz[0], 'startY', offsetTop);
@@ -153,7 +154,8 @@
         if (options.resize && touches === 2) {
           var startWidth  = $.data($thiz[0], 'startWidth');
           var startHeight = $.data($thiz[0], 'startHeight');
-          console.log(startWidth, startHeight, startWidth / startHeight);
+          var startX = $.data($thiz[0], 'startX');
+          var startY = $.data($thiz[0], 'startY');
 
           var x = e.originalEvent.touches[0].pageX,
           y = e.originalEvent.touches[0].pageY,
@@ -164,9 +166,16 @@
           distance = Math.sqrt((xd * xd) + (yd * yd)),
           halfDistance = ((distance - $.data($thiz[0], 'startDistance')) / 2),
           newWidth = (startWidth + (distance - $.data($thiz[0], 'startDistance'))),
-          newHeight = (startHeight + (distance - $.data($thiz[0], 'startDistance')) * (startHeight / startWidth)),
-          newLeft = ($.data($thiz[0], 'startX') - halfDistance),
-          newTop = ($.data($thiz[0], 'startY') - halfDistance);
+          newHeight = (startHeight + (distance - $.data($thiz[0], 'startDistance')) * (startHeight / startWidth));
+
+          //  TODO: resizing centering needs work!
+          var min = Math.min($parent.width(), $parent.height());
+          var halfW = (Math.max(newWidth, min) - Math.max(startWidth, min)) / 2 * (min / newWidth);
+          var halfH = (Math.max(newHeight, min) - Math.max(startHeight, min)) / 2 * (min / newHeight);
+          var newLeft = startX - halfW;
+          var newTop  = startY - halfH;
+
+          //console.log(newWidth, newHeight, 'vs', startWidth, startHeight, ';', newLeft, newTop, 'vs', startX, startY);
 
           $this.css({
             width: newWidth + 'px',
