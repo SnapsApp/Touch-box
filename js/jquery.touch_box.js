@@ -18,7 +18,7 @@
 ;(function ($) {
   "use strict";
 
-  var undef, zindex = 400, propNameTransform = 'Transform', propNameTransformOrigin = 'TransformOrigin', transformProps = [
+  var undef, propNameTransform = 'Transform', propNameTransformOrigin = 'TransformOrigin', transformProps = [
     'O',
     'ms',
     'Webkit',
@@ -89,9 +89,6 @@
         touches = (typeof e.pageX !== 'undefined' ? 1 : e.originalEvent.touches.length),
         options = $.data($thiz[0], 'options');
 
-        zindex += 1;
-
-        $thiz.css({ zIndex: zindex });
         $.data($thiz[0], 'touches', touches);
 
         if (ignoreTouch) {
